@@ -1,0 +1,42 @@
+body {
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+#nav {
+    background-color: grey;
+    width: 100%;
+    height: 45px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+}
+
+#map {
+    width: 500px;
+    height: 450px;
+    border: 1px grey;
+    border-radius: 3px;
+}
+
+#info {
+    width: 40%;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+#movement {
+    width: 40%;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+#score {
+    padding-bottom: 50px;
+}
