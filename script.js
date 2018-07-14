@@ -25,18 +25,26 @@ let vermontBounds = vermontPolygon.getBounds();
 
 let vermontCenter = vermontBounds.getCenter();
 
-// var map = L.map("map").setView(vermontCenter, 16.5); - was supposed to set the view so I can see the whole polygon, but not necessary for game overall.
+console.log("Center IS:")
+console.log({vermontCenter});
+
+let map = L.map("map").setView([vermontCenter.lat, vermontCenter.lng], 7);
+
+map.zoomControl.disable();
+map.dragging.disable();
+map.setMaxZoom(7);
+map.setMinZoom(7);
+console.log("Map IS:")
+console.log({map})
+
+vermontPolygon.addTo(map);
 
 // Sets the map layer - specifically satellite, in this case.
 L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
   {
-
     attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
 
 }).addTo(map);
-
-// Adding the Vermont polygon to the map itself!
-vermontPolygon.addTo(map);
 
 let boundingBox = {
     maxLon: -73.3654,
@@ -45,9 +53,54 @@ let boundingBox = {
     minLat: 42.7395
 };
 
-// Set map zoom - to give them hope, muahahahaha
-map.setMaxZoom(18);
-map.setMinZoom(16);
+let randomLon = 0;
+let randomLat = 0;
+let marker;
 
-// You wanted dragging? You did not get it. You poor bastard.
-map.dragging.disable();
+function setToRandom() {
+    
+    let loops = 0;
+
+    while (leafletPip.pointInLayer([randomLon, randomLat], vermontPolygon).length === 0) {
+        pickRandomPoint(); 
+        console.log({loops});
+        loops += 1;  
+    }
+
+    marker = L.marker([randomLat, randomLon]).addTo(map);
+    let randomCoords = [randomLon, randomLat];
+    console.log({randomCoords})
+
+    return randomCoords
+}
+
+function pickRandomPoint () {
+    randomLat = Math.random() * (boundingBox.maxLat - boundingBox.minLat) + boundingBox.minLat;
+    randomLon = Math.random() * (boundingBox.maxLon - boundingBox.minLon) + boundingBox.minLon; 
+}
+
+function setCoords() {
+
+    map.setView([randomLat, randomLon], 16);
+    return map;
+}
+
+function latLonAreZero () {
+    randomLat === 0 && randomLon === 0
+}
+
+let startButton = document.getElementById("start");
+
+startButton.addEventListener("click", () => {
+
+    map.setMaxZoom(16);
+    map.setMinZoom(16);   
+    // You wanted dragging? You did not get it. You poor bastard. 
+    map.dragging.disable();
+
+    if (!latLonAreZero()) {
+        pickRandomPoint();
+    }
+    setToRandom();
+    setCoords();
+})
