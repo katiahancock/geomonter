@@ -1,32 +1,9 @@
-// The start button is disabled when you click on it!
-let startButtonOff = document.getElementById("start");
-
-startButtonOff.addEventListener("click", () => {
-
-    document.getElementById("start").disabled = true;
-    document.getElementById("quit").disabled = false;
-
-})
-
-// When you click the "I give up" button, the start button is enabled again!
-let startButtonRefresh = document.getElementById("quit");
-
-startButtonRefresh.addEventListener("click", () => {
-
-    document.getElementById("quit").disabled = true;
-    document.getElementById("start").disabled = false;
-
-})
-
 // The polygon shape that defines Vermont, but leaves out a couple of NH-border towns.
 let vermontPolygon = L.geoJSON(border_data);
 
 let vermontBounds = vermontPolygon.getBounds();
 
 let vermontCenter = vermontBounds.getCenter();
-
-console.log("Center IS:")
-console.log({vermontCenter});
 
 let map = L.map("map").setView([vermontCenter.lat, vermontCenter.lng], 7);
 
@@ -35,8 +12,8 @@ map.zoomControl.disable();
 map.dragging.disable();
 map.setMaxZoom(7);
 map.setMinZoom(7);
-console.log("Map IS:")
-console.log({map})
+
+$("#countyButtons").hide();
 
 vermontPolygon.addTo(map);
 
@@ -95,10 +72,19 @@ function latLonAreZero () {
     randomLat === 0 && randomLon === 0
 }
 
+// This turns on the game!
 let startButton = document.getElementById("start");
 
-// This turns on the game!
 startButton.addEventListener("click", () => {
+    
+    // Takes all listed values and clears the text content.
+    document.getElementById("latitude").textContent = "";
+    document.getElementById("longitude").textContent = "";
+    document.getElementById("county").textContent = "";
+    document.getElementById("town").textContent = "";
+
+    document.getElementById("start").disabled = true;
+    document.getElementById("quit").disabled = false;
 
     map.setMaxZoom(16);
     map.setMinZoom(16);   
@@ -111,8 +97,59 @@ startButton.addEventListener("click", () => {
     }
     setToRandom();
     setCoords();
+});
+
+// Changes text content for each div to the lat, lon, and county. Town still in progress.
+function displayLocationInfo(polygonInfo) {
+    document.getElementById("latitude").textContent = randomLat;
+    document.getElementById("longitude").textContent = randomLon;
+    document.getElementById("county").textContent = polygonInfo.address.county;
+    document.getElementById("town").textContent = "";
+};
+
+// Fetch request API to Nominatim to get location data (in plain English!) when inserting our random coordinates into a Nominatim link. 
+function getCounty() {
+    fetch("https://nominatim.openstreetmaps.org/reverse/?format=json&lat=" + randomLat + "&lon=" + randomLon)
+        
+        .then(function (response) {
+            
+            return response.json();
+        })
+
+        .then(function (polygonInfo) {
+
+            displayLocationInfo(polygonInfo)
+        });
+};
+
+
+
+// Displays county buttons div when you click guess button, and allows you to select a county.
+let guessButton = document.getElementById("guess");
+
+guessButton.addEventListener("click", () => {
+
+    $("#countyButtons").show();
 })
 
-function getCounty() {
-    
-}
+
+
+// Give up! Uses the getCounty() function to display the lat, lon, county, etc.
+let giveUpButton = document.getElementById("quit");
+
+giveUpButton.addEventListener("click", () => {
+
+    // map.setMaxZoom(13);
+    // map.setMinZoom(13);
+    getCounty();
+    $("#countyButtons").hide();
+});
+
+// When you click the "I give up" button, the start button is enabled again!
+let giveUpRefresh = document.getElementById("quit");
+
+giveUpRefresh.addEventListener("click", () => {
+
+    document.getElementById("quit").disabled = true;
+    document.getElementById("start").disabled = false;
+});
