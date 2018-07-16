@@ -30,6 +30,7 @@ console.log({vermontCenter});
 
 let map = L.map("map").setView([vermontCenter.lat, vermontCenter.lng], 7);
 
+// This is setting control things - zoom and drag lock.
 map.zoomControl.disable();
 map.dragging.disable();
 map.setMaxZoom(7);
@@ -46,6 +47,7 @@ L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/
 
 }).addTo(map);
 
+// This is the Vermont thing to prevent NH!
 let boundingBox = {
     maxLon: -73.3654,
     minLon: -71.5489,
@@ -53,6 +55,7 @@ let boundingBox = {
     minLat: 42.7395
 };
 
+// Defining variables to be used below.
 let randomLon = 0;
 let randomLat = 0;
 let marker;
@@ -60,7 +63,7 @@ let marker;
 function setToRandom() {
     
     let loops = 0;
-
+    // This says that if it's in NH, generate a new set of coordinates until it's in VT.
     while (leafletPip.pointInLayer([randomLon, randomLat], vermontPolygon).length === 0) {
         pickRandomPoint(); 
         console.log({loops});
@@ -74,27 +77,32 @@ function setToRandom() {
     return randomCoords
 }
 
+// Pick a random point within the Vermont bounding box!
 function pickRandomPoint () {
     randomLat = Math.random() * (boundingBox.maxLat - boundingBox.minLat) + boundingBox.minLat;
     randomLon = Math.random() * (boundingBox.maxLon - boundingBox.minLon) + boundingBox.minLon; 
 }
 
+// Set the coordinates!
 function setCoords() {
 
     map.setView([randomLat, randomLon], 16);
     return map;
 }
 
+// If latitude and longitude are zero, generate a new one!
 function latLonAreZero () {
     randomLat === 0 && randomLon === 0
 }
 
 let startButton = document.getElementById("start");
 
+// This turns on the game!
 startButton.addEventListener("click", () => {
 
     map.setMaxZoom(16);
     map.setMinZoom(16);   
+
     // You wanted dragging? You did not get it. You poor bastard. 
     map.dragging.disable();
 
@@ -104,3 +112,7 @@ startButton.addEventListener("click", () => {
     setToRandom();
     setCoords();
 })
+
+function getCounty() {
+    
+}
