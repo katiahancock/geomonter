@@ -41,7 +41,7 @@ body {
 }
 
 #movement {
-    width: 40%;
+    width: auto;
     height: auto;
     display: flex;
     flex-direction: column;

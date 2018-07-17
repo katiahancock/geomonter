@@ -24,17 +24,13 @@ L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/
 
 }).addTo(map);
 
-// This is the Vermont thing to prevent NH!
-let boundingBox = {
-    maxLon: -73.3654,
-    minLon: -71.5489,
-    maxLat: 45.0065,
-    minLat: 42.7395
-};
-
 // Defining variables to be used below.
 let randomLon = 0;
 let randomLat = 0;
+
+let currentLat;
+let currentLon;
+
 let marker;
 
 function setToRandom() {
@@ -56,8 +52,20 @@ function setToRandom() {
 
 // Pick a random point within the Vermont bounding box!
 function pickRandomPoint () {
+
+    // This is the Vermont thing to prevent NH!
+    let boundingBox = {
+        maxLon: -73.3654,
+        minLon: -71.5489,
+        maxLat: 45.0065,
+        minLat: 42.7395
+    };
+
     randomLat = Math.random() * (boundingBox.maxLat - boundingBox.minLat) + boundingBox.minLat;
-    randomLon = Math.random() * (boundingBox.maxLon - boundingBox.minLon) + boundingBox.minLon; 
+    randomLon = Math.random() * (boundingBox.maxLon - boundingBox.minLon) + boundingBox.minLon;
+    
+    currentLat = randomLat;
+    currentLon = randomLon;
 }
 
 // Set the coordinates!
@@ -71,6 +79,49 @@ function setCoords() {
 function latLonAreZero () {
     randomLat === 0 && randomLon === 0
 }
+
+// Makes movement buttons functional!
+function nordSudEstOuest() {
+
+    let northButton = document.getElementById("north");
+
+    northButton.addEventListener("click", () => {
+        
+        currentLat += 0.00050;
+        map.setView([currentLat, currentLon], 16);
+    });
+
+    let southButton = document.getElementById("south");
+
+    southButton.addEventListener("click", () => {
+        
+        currentLat -= 0.00050;
+        map.setView([currentLat, currentLon], 16);
+    });
+
+    let eastButton = document.getElementById("east");
+
+    eastButton.addEventListener("click", () => {
+        
+        currentLon += 0.00050;
+        map.setView([currentLat, currentLon], 16);
+    });
+
+    let westButton = document.getElementById("west");
+
+    westButton.addEventListener("click", () => {
+        
+        currentLon -= 0.00050;
+        map.setView([currentLat, currentLon], 16);
+    });
+
+    let returnButton = document.getElementById("return");
+
+    returnButton.addEventListener("click", () => {
+
+        map.setView([randomLat, randomLon], 16);
+    });
+};
 
 // This turns on the game!
 let startButton = document.getElementById("start");
@@ -97,6 +148,7 @@ startButton.addEventListener("click", () => {
     }
     setToRandom();
     setCoords();
+    nordSudEstOuest();
 });
 
 // Changes text content for each div to the lat, lon, and county. Town still in progress.
@@ -122,17 +174,23 @@ function getCounty() {
         });
 };
 
-
-
 // Displays county buttons div when you click guess button, and allows you to select a county.
 let guessButton = document.getElementById("guess");
 
 guessButton.addEventListener("click", () => {
 
     $("#countyButtons").show();
-})
+});
+
+// function buttonGuess() {
+
+//     if (polygonInfo.address.county === )    {
+
+//     } else {
 
 
+//     }
+// };
 
 // Give up! Uses the getCounty() function to display the lat, lon, county, etc.
 let giveUpButton = document.getElementById("quit");
